@@ -22,6 +22,8 @@ results.setAttribute("aria-live", "polite");
 
 app.append(heading, searchInput, results);
 
+let activeController: AbortController | null = null;
+
 const handleSearch = debounce(async () => {
   const query = searchInput.value.trim();
 
@@ -30,11 +32,36 @@ const handleSearch = debounce(async () => {
     return;
   }
 
-  const controller = new AbortController();
-  const countries = await searchCountries(query, controller.signal);
+  activeController?.abort();
 
-  const cards = countries.map(createCountryCard);
-  results.replaceChildren(...cards);
+  const controller = new AbortController();
+  activeController = controller;
+  results.textContent = "Loading...";
+  try {
+    const countries = await searchCountries(query, controller.signal);
+
+    if (controller.signal.aborted) {
+      return;
+    }
+
+    if (countries.length === 0) {
+      results.textContent = "No countries found";
+      return;
+    }
+
+    const cards = countries.map(createCountryCard);
+    results.replaceChildren(...cards);
+  } catch (error) {
+    if (controller.signal.aborted) {
+      return;
+    }
+
+    console.error("Failed to search countries:", error);
+    results.textContent = "Something went wrong. Please try again.";
+  }
 }, 300);
 
-searchInput.addEventListener("input", handleSearch);
+searchInput.addEventListener("input", () => {
+  activeController?.abort();
+  handleSearch();
+});
