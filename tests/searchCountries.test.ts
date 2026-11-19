@@ -1,3 +1,4 @@
+import { HttpError } from "../src/api/HttpError.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { searchCountries } from "../src/api/searchCountries.js";
 
@@ -59,6 +60,6 @@ describe("searchCountries", () => {
 
     await expect(
       searchCountries("poland", controller.signal),
-    ).rejects.toThrow();
+    ).rejects.toBeInstanceOf(HttpError);
   });
 });
