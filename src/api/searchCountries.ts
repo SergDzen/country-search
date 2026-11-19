@@ -1,7 +1,5 @@
+import type { CountryResponse } from "../types/country.js";
 import { HttpError } from "./HttpError.js";
-export interface CountryResponse {
-  name: string;
-}
 
 export async function searchCountries(
   query: string,
