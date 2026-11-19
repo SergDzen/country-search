@@ -1,3 +1,4 @@
+import { classifySearchError } from "./utils/classifySearchError.js";
 import { debounce } from "./utils/debounce.js";
 import { createCountryCard } from "./components/CountryCard.js";
 import { createSearchInput } from "./components/SearchInput.js";
@@ -67,14 +68,13 @@ const executeSearch = async (): Promise<void> => {
     const cards = countries.map(createCountryCard);
     results.replaceChildren(...cards);
   } catch (error) {
-    if (
-      controller.signal.aborted &&
-      controller.signal.reason?.name !== "TimeoutError"
-    ) {
+    const errorType = classifySearchError(error);
+
+    if (errorType === "aborted") {
       return;
     }
 
-    console.error("Failed to search countries:", error);
+    console.error(`Country search failed (${errorType}):`, error);
     showError();
   }
 };
