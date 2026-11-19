@@ -85,4 +85,51 @@ describe("searchCountries", () => {
       name: "AbortError",
     });
   });
+
+  it("rejects with TimeoutError after 5 seconds", async () => {
+    const controller = new AbortController();
+
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, options: { signal: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          if (options.signal.aborted) {
+            reject(options.signal.reason);
+            return;
+          }
+
+          options.signal.addEventListener(
+            "abort",
+            () => reject(options.signal.reason),
+            { once: true },
+          );
+        }),
+    );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const timeoutSpy = vi
+      .spyOn(AbortSignal, "timeout")
+      .mockImplementation((milliseconds: number) => {
+        expect(milliseconds).toBe(5000);
+
+        const timeoutController = new AbortController();
+        timeoutController.abort(
+          new DOMException("The operation timed out", "TimeoutError"),
+        );
+
+        return timeoutController.signal;
+      });
+
+    try {
+      await expect(
+        searchCountries("poland", controller.signal),
+      ).rejects.toMatchObject({
+        name: "TimeoutError",
+      });
+
+      expect(timeoutSpy).toHaveBeenCalledWith(5000);
+    } finally {
+      timeoutSpy.mockRestore();
+    }
+  });
 });
