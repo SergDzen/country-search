@@ -1,3 +1,4 @@
+import { HttpError } from "./HttpError.js";
 export interface CountryResponse {
   name: string;
 }
@@ -19,7 +20,7 @@ export async function searchCountries(
   }
 
   if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
+    throw new HttpError(response.status, `HTTP error: ${response.status}`);
   }
 
   return (await response.json()) as CountryResponse[];
