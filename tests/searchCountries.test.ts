@@ -7,8 +7,20 @@ describe("searchCountries", () => {
     vi.unstubAllGlobals();
   });
 
-  it("returns countries when API responds successfully", async () => {
-    const countries = [{ name: "Poland" }];
+  it("returns mapped countries when API responds successfully", async () => {
+    const countries = [
+      {
+        name: "Poland",
+        capital: "Warsaw",
+        region: "Europe",
+        population: 37950802,
+        area: 312679,
+        flags: {
+          png: "https://flagcdn.com/w320/pl.png",
+          svg: "https://flagcdn.com/pl.svg",
+        },
+      },
+    ];
 
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
@@ -21,7 +33,17 @@ describe("searchCountries", () => {
     const controller = new AbortController();
     const result = await searchCountries("poland", controller.signal);
 
-    expect(result).toEqual(countries);
+    expect(result).toEqual([
+      {
+        name: "Poland",
+        capital: "Warsaw",
+        region: "Europe",
+        population: 37950802,
+        area: 312679,
+        flagUrl: "https://flagcdn.com/pl.svg",
+      },
+    ]);
+
     expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://countries.dev/name/poland",
