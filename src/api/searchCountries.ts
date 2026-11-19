@@ -1,10 +1,12 @@
+import { mapCountryResponse } from "../utils/mapCountryResponse.js";
+import type { Country } from "../types/Country.js";
 import type { CountryResponse } from "../types/country.js";
 import { HttpError } from "./HttpError.js";
 
 export async function searchCountries(
   query: string,
   signal: AbortSignal,
-): Promise<CountryResponse[]> {
+): Promise<Country[]> {
   const url = `https://countries.dev/name/${encodeURIComponent(query)}`;
 
   const combinedSignal = AbortSignal.any([signal, AbortSignal.timeout(5000)]);
@@ -21,5 +23,7 @@ export async function searchCountries(
     throw new HttpError(response.status, `HTTP error: ${response.status}`);
   }
 
-  return (await response.json()) as CountryResponse[];
+  const countries = (await response.json()) as CountryResponse[];
+
+  return countries.map(mapCountryResponse);
 }
