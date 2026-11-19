@@ -62,4 +62,27 @@ describe("searchCountries", () => {
       searchCountries("poland", controller.signal),
     ).rejects.toBeInstanceOf(HttpError);
   });
+
+  it("rejects with AbortError when request is aborted", async () => {
+    const controller = new AbortController();
+
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, options: { signal: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          options.signal.addEventListener("abort", () => {
+            reject(options.signal.reason);
+          });
+        }),
+    );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const request = searchCountries("poland", controller.signal);
+
+    controller.abort();
+
+    await expect(request).rejects.toMatchObject({
+      name: "AbortError",
+    });
+  });
 });
