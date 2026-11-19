@@ -1,5 +1,5 @@
 import type { CountryResponse } from "../types/country.js";
-import type { Country } from "../types/Country.js";
+import type { Country } from "../types/country.js";
 
 export function mapCountryResponse(response: CountryResponse): Country {
   return {

@@ -42,3 +42,12 @@ export interface CountryResponse {
   topLevelDomain: string[];
   populationDensity: number;
 }
+
+export interface Country {
+  name: string;
+  capital: string;
+  region: string;
+  population: number;
+  area: number;
+  flagUrl: string;
+}

@@ -1,5 +1,5 @@
 import { mapCountryResponse } from "../utils/mapCountryResponse.js";
-import type { Country } from "../types/Country.js";
+import type { Country } from "../types/country.js";
 import type { CountryResponse } from "../types/country.js";
 import { HttpError } from "./HttpError.js";
 
