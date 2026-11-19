@@ -24,7 +24,22 @@ app.append(heading, searchInput, results);
 
 let activeController: AbortController | null = null;
 
-const handleSearch = debounce(async () => {
+const showError = (): void => {
+  const message = document.createElement("p");
+  message.textContent = "Something went wrong. Please try again.";
+
+  const retryButton = document.createElement("button");
+  retryButton.type = "button";
+  retryButton.textContent = "Retry";
+
+  retryButton.addEventListener("click", () => {
+    void executeSearch();
+  });
+
+  results.replaceChildren(message, retryButton);
+};
+
+const executeSearch = async (): Promise<void> => {
   const query = searchInput.value.trim();
 
   if (!query) {
@@ -52,14 +67,19 @@ const handleSearch = debounce(async () => {
     const cards = countries.map(createCountryCard);
     results.replaceChildren(...cards);
   } catch (error) {
-    if (controller.signal.aborted) {
+    if (
+      controller.signal.aborted &&
+      controller.signal.reason?.name !== "TimeoutError"
+    ) {
       return;
     }
 
     console.error("Failed to search countries:", error);
-    results.textContent = "Something went wrong. Please try again.";
+    showError();
   }
-}, 300);
+};
+
+const handleSearch = debounce(executeSearch, 300);
 
 searchInput.addEventListener("input", () => {
   activeController?.abort();
