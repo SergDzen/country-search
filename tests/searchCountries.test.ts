@@ -13,6 +13,23 @@ describe("searchCountries", () => {
         name: "Poland",
         capital: "Warsaw",
         region: "Europe",
+        subregion: "Eastern Europe",
+        borders: ["DEU", "CZE"],
+        languages: [
+          {
+            name: "Polish",
+            iso639_1: "pl",
+            iso639_2: "pol",
+            nativeName: "Polski",
+          },
+        ],
+        currencies: [
+          {
+            code: "PLN",
+            name: "Polish złoty",
+            symbol: "zł",
+          },
+        ],
         population: 37950802,
         area: 312679,
         flags: {
@@ -38,6 +55,16 @@ describe("searchCountries", () => {
         name: "Poland",
         capital: "Warsaw",
         region: "Europe",
+        subregion: "Eastern Europe",
+        borders: ["DEU", "CZE"],
+        languages: ["Polish"],
+        currencies: [
+          {
+            code: "PLN",
+            name: "Polish złoty",
+            symbol: "zł",
+          },
+        ],
         population: 37950802,
         area: 312679,
         flagUrl: "https://flagcdn.com/pl.svg",

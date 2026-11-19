@@ -1,3 +1,4 @@
+import { showCountryDetails } from "./CountryDetails.js";
 import type { Country } from "../types/country.js";
 
 export function createCountryCard(country: Country): HTMLElement {
@@ -23,6 +24,21 @@ export function createCountryCard(country: Country): HTMLElement {
   population.textContent = `Population: ${country.population.toLocaleString("en-US")}`;
 
   card.append(flag, title, capital, region, population);
+
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", `View details for ${country.name}`);
+
+  card.addEventListener("click", () => {
+    showCountryDetails(country);
+  });
+
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      showCountryDetails(country);
+    }
+  });
 
   return card;
 }
